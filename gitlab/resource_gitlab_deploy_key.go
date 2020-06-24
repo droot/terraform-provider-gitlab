@@ -35,7 +35,9 @@ func resourceGitlabDeployKey() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					return old == strings.TrimSpace(new)
+					fmt.Printf("old: %s\n new: %s\n", old, new)
+					return true
+					// old == strings.TrimSpace(new)
 				},
 			},
 			"can_push": {
@@ -43,6 +45,10 @@ func resourceGitlabDeployKey() *schema.Resource {
 				Optional: true,
 				Default:  false,
 				ForceNew: true,
+			},
+			"key_id": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
@@ -86,6 +92,7 @@ func resourceGitlabDeployKeyRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("title", deployKey.Title)
 	d.Set("key", deployKey.Key)
 	d.Set("can_push", deployKey.CanPush)
+	d.Set("key_id", fmt.Sprintf("%s:%d", project, deployKey.ID))
 	return nil
 }
 
@@ -109,6 +116,7 @@ func resourceGitlabDeployKeyDelete(d *schema.ResourceData, meta interface{}) err
 
 func resourceGitlabDeployKeyStateImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	s := strings.Split(d.Id(), ":")
+	fmt.Printf("importing id: %v project: %v \n", d.Id(), d.Get("project"))
 	if len(s) != 2 {
 		d.SetId("")
 		return nil, fmt.Errorf("Invalid Deploy Key import format; expected '{project_id}:{deploy_key_id}'")

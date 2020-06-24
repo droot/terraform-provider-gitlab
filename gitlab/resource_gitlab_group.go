@@ -44,6 +44,10 @@ func resourceGitlabGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"group_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -140,6 +144,7 @@ func resourceGitlabGroupRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("full_path", group.FullPath)
 	d.Set("full_name", group.FullName)
 	d.Set("web_url", group.WebURL)
+	d.Set("group_id", fmt.Sprintf("%d", group.ID))
 	d.Set("description", group.Description)
 	d.Set("lfs_enabled", group.LFSEnabled)
 	d.Set("request_access_enabled", group.RequestAccessEnabled)
